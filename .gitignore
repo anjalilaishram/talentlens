@@ -1,0 +1,14 @@
+# embedding cache (regenerated on first run)
+.cache/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+
+# submission PDF is generated at publish time with the live Drive CSV link
+docs/talentlens_submission.pdf

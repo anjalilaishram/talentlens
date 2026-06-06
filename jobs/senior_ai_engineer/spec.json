@@ -1,0 +1,32 @@
+{
+  "title": "Senior AI Engineer (Founding Team)",
+  "company": "Redrob AI",
+  "weights": { "semantic": 0.55, "skills": 0.30, "seniority": 0.15 },
+  "seniority": { "ideal": [6, 8], "acceptable": [5, 9], "soft": [3, 12] },
+
+  "must_have": {
+    "retrieval & embeddings": ["embedding", "sentence-transformer", "sentence transformer", "bge", "e5", "semantic search", "dense retrieval", "rag", "retrieval"],
+    "vector / hybrid search": ["faiss", "pinecone", "weaviate", "qdrant", "milvus", "opensearch", "elasticsearch", "pgvector", "haystack", "bm25", "hybrid search", "vector db", "vector database"],
+    "ranking & recsys": ["learning to rank", "learning-to-rank", "ltr", "recommend", "recommender", "ranking", "relevance", "information retrieval", "personalization", "search relevance"],
+    "evaluation": ["ndcg", "mrr", "map@", "mean average precision", "a/b", "ab test", "ab-test", "offline eval", "precision@", "recall@", "ctr", "click-through"]
+  },
+  "nice_to_have": {
+    "LLM fine-tuning": ["lora", "qlora", "peft", "fine-tune", "fine-tuning", "fine-tun", "instruction tuning"],
+    "learning-to-rank models": ["xgboost", "lightgbm", "two-tower", "gradient boosted"],
+    "scale / infra": ["distributed", "kubernetes", "inference optimization", "triton", "onnx"]
+  },
+
+  "credibility": {
+    "engineering_titles": ["software engineer", "developer", "scientist", "ml engineer", "ml ", "machine learning", "data engineer", "data scientist", "data ", "research engineer", "applied scien", "architect", "nlp", "search engineer", "recommendation", "relevance", "platform engineer", "backend engineer", "ai engineer", "programmer", "devops"],
+    "off_domain_titles": ["marketing", "sales", "content writer", "copywriter", "recruiter", "human resource", "hr ", "accountant", "finance manager", "teacher", "lecturer", "graphic designer", "ui designer", "product manager", "business development", "operations manager", "customer success", "customer support", "civil engineer", "mechanical engineer", "electrical engineer", "chemical engineer", "structural engineer", "site engineer"],
+    "off_domain_specialist": ["computer vision", "image classification", "speech recognition", "robotics", "autonomous"],
+    "services_companies": ["tcs", "tata consultancy", "infosys", "wipro", "accenture", "cognizant", "capgemini", "tech mahindra", "mindtree", "hcl"],
+    "framework_only": ["langchain", "llamaindex"]
+  },
+
+  "availability": {
+    "active_recent_cutoff": "2026-03",
+    "active_stale_cutoff": "2025-12",
+    "low_response_rate": 0.1
+  }
+}

@@ -1,7 +1,12 @@
 # TalentLens
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1nenRYfW21hrCYfd5U-aY_EGgjb6pHu8p)
+
 A config-driven, embeddings-based candidate ranker for the **Intelligent Candidate
 Discovery & Ranking Challenge** (India Runs on Data & AI).
+
+**Run it now:** [open the demo in Colab](https://colab.research.google.com/drive/1nenRYfW21hrCYfd5U-aY_EGgjb6pHu8p)
+and `Runtime → Run all` — ranks the full 100K pool in ~2–3 min on a plain CPU runtime.
 
 The dataset is built around a trap: keyword-matching fails on purpose. A Marketing
 Manager who pasted "Pinecone, RAG, FAISS" into their skills is *not* a fit; a strong
@@ -89,6 +94,8 @@ docker run --rm -v $PWD/data:/data talentlens \
 ```
 
 ### Colab
+
+[**Open the demo in Colab →**](https://colab.research.google.com/drive/1nenRYfW21hrCYfd5U-aY_EGgjb6pHu8p)
 
 `demo_colab.ipynb` clones this repo, pulls the candidate file **and precomputed embeddings**
 from Drive links, and runs `rank.py --emb`. The full 100K pool ranks in ~2–3 min on a plain

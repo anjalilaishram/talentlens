@@ -58,8 +58,20 @@ python rank.py --job jobs/senior_ai_engineer \
 
 The first run downloads MiniLM (~90 MB) and encodes the pool; embeddings are cached to
 `.cache/`, so later runs are instant. Encoding the full 100K pool takes ~2–3 min on a
-GPU (auto-detected) or ~10–15 min on CPU. Output is the required
-`candidate_id, rank, score, reasoning` CSV, where `reasoning` is one clear sentence:
+GPU (auto-detected) or ~10–15 min on CPU.
+
+Candidate embeddings are **job-independent**, so you can precompute them once and reuse them
+for any role — no GPU required at rank time:
+
+```bash
+python rank.py --candidates candidates.jsonl --out submission.csv \
+               --save-emb embeddings.npz          # encode once, save (id-aligned)
+python rank.py --candidates candidates.jsonl --out submission.csv \
+               --emb embeddings.npz                # later runs skip encoding (~40 s on CPU)
+```
+
+Output is the required `candidate_id, rank, score, reasoning` CSV, where `reasoning` is one
+clear sentence:
 
 ```
 Strong fit. AI Engineer @ upGrad (7.6y). Covers 4/4 must-haves: retrieval & embeddings
@@ -78,8 +90,9 @@ docker run --rm -v $PWD/data:/data talentlens \
 
 ### Colab
 
-`demo_colab.ipynb` clones this repo, pulls the candidate file from a Drive link, and runs
-`rank.py` on the full pool. Use a GPU runtime for the fast path.
+`demo_colab.ipynb` clones this repo, pulls the candidate file **and precomputed embeddings**
+from Drive links, and runs `rank.py --emb`. The full 100K pool ranks in ~2–3 min on a plain
+CPU runtime — no GPU needed. (Toggle `USE_PRECOMPUTED` off to encode from scratch.)
 
 ## Files
 

@@ -234,6 +234,36 @@ def embed(docs, cache_key, rebuild=False):
     return vecs
 
 
+def load_precomputed(emb_path, cands, docs):
+    """Load candidate embeddings from an .npz (ids + vecs), aligned by candidate_id.
+
+    Candidate embeddings are job-independent, so one precomputed file serves every
+    role and lets the ranking step skip the (slow) encode entirely. Any candidate not
+    found in the file is encoded on the fly, so partial files still work."""
+    d = np.load(emb_path, allow_pickle=True)
+    vecs = d["vecs"]                                  # load once (avoid re-decompressing)
+    idx = {cid: k for k, cid in enumerate(d["ids"].tolist())}
+    rows = np.array([idx.get(c["candidate_id"], -1) for c in cands])
+    M = np.zeros((len(cands), vecs.shape[1]), dtype="float32")
+    have = rows >= 0
+    M[have] = vecs[rows[have]]
+    missing = [i for i, ok in enumerate(have) if not ok]
+    if missing:
+        print(f"  {len(missing):,} candidates not in the precomputed file -> encoding those")
+        from sentence_transformers import SentenceTransformer
+        mv = SentenceTransformer(MODEL).encode([docs[i] for i in missing], batch_size=64,
+                                               normalize_embeddings=True, show_progress_bar=True)
+        for j, i in enumerate(missing):
+            M[i] = mv[j]
+    return M
+
+
+def save_precomputed(emb_path, cands, M):
+    ids = np.array([c["candidate_id"] for c in cands])
+    np.savez(emb_path, ids=ids, vecs=M.astype("float32"))
+    print(f"  saved precomputed embeddings -> {emb_path} ({len(ids):,} candidates)")
+
+
 def jd_vector(text):
     from sentence_transformers import SentenceTransformer
     return SentenceTransformer(MODEL).encode([text], normalize_embeddings=True)[0]
@@ -256,6 +286,8 @@ def main():
     ap.add_argument("--topk", type=int, default=100)
     ap.add_argument("--sample", action="store_true", help="rank the bundled 50-candidate sample")
     ap.add_argument("--rebuild", action="store_true", help="recompute the embedding cache")
+    ap.add_argument("--emb", default="", help="precomputed embeddings .npz (ids+vecs); skips encoding")
+    ap.add_argument("--save-emb", default="", help="after encoding, save embeddings to this .npz")
     args = ap.parse_args()
     if args.sample:
         args.candidates = os.path.join(HERE, "sample_candidates.json")
@@ -268,11 +300,17 @@ def main():
     docs = [document(c) for c in cands]
     print(f"Loaded {len(cands):,} candidates in {time.time()-t0:.1f}s")
 
-    key = hashlib.md5(f"{os.path.abspath(args.candidates)}:{len(cands)}".encode()).hexdigest()[:10]
     t = time.time()
-    M = embed(docs, key, args.rebuild)
-    sem = unit(M @ jd_vector(job.description))
-    print(f"Embeddings ready in {time.time()-t:.1f}s  (cache {key})")
+    if args.emb:
+        print(f"Using precomputed embeddings: {args.emb}")
+        M = load_precomputed(args.emb, cands, docs)
+    else:
+        key = hashlib.md5(f"{os.path.abspath(args.candidates)}:{len(cands)}".encode()).hexdigest()[:10]
+        M = embed(docs, key, args.rebuild)
+    if args.save_emb:
+        save_precomputed(args.save_emb, cands, M)
+    sem = unit(M @ jd_vector(job.description))  # only the 1-sentence JD is encoded here
+    print(f"Embeddings ready in {time.time()-t:.1f}s")
 
     n_must = len(job.must)
     rows = []
